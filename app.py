@@ -2,7 +2,7 @@ import os
 import time
 import logging
 import torch
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException,Request
 from pydantic import BaseModel
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from peft import PeftModel
@@ -209,6 +209,7 @@ def infer(request: InferenceRequest):
     except Exception as e:
         logger.exception("Inference failed")
         raise HTTPException(status_code=500, detail=str(e))
+
 
 
 
