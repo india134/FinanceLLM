@@ -139,6 +139,12 @@ class InferenceRequest(BaseModel):
 # ============================================================
 # INFERENCE
 # ============================================================
+@app.get("/")
+def read_root(request: Request):
+    return templates.TemplateResponse(
+        "index.html",
+        {"request": request}
+    )
 @app.post("/infer")
 def infer(request: InferenceRequest):
     try:
@@ -203,6 +209,7 @@ def infer(request: InferenceRequest):
     except Exception as e:
         logger.exception("Inference failed")
         raise HTTPException(status_code=500, detail=str(e))
+
 
 
 
