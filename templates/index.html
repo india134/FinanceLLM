@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Finance LLM Chat</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background: #f4f6f8;
+            margin: 0;
+            padding: 0;
+        }
+
+        .container {
+            width: 800px;
+            margin: 40px auto;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            padding: 20px;
+        }
+
+        h2 {
+            margin-top: 0;
+            text-align: center;
+        }
+
+        .chat-box {
+            height: 400px;
+            border: 1px solid #ddd;
+            padding: 10px;
+            overflow-y: auto;
+            margin-bottom: 15px;
+            background: #fafafa;
+        }
+
+        .message {
+            margin-bottom: 10px;
+        }
+
+        .user {
+            font-weight: bold;
+            color: #1a73e8;
+        }
+
+        .bot {
+            font-weight: bold;
+            color: #0b8043;
+        }
+
+        textarea {
+            width: 100%;
+            height: 80px;
+            padding: 10px;
+            resize: none;
+            font-size: 14px;
+        }
+
+        button {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+
+        .meta {
+            font-size: 12px;
+            color: #555;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Finance LLM Chat</h2>
+
+    <div id="chatBox" class="chat-box"></div>
+
+    <textarea id="promptInput" placeholder="Paste company disclosure text here..."></textarea>
+    <br>
+    <button onclick="sendPrompt()">Send</button>
+
+    <div id="metaInfo" class="meta"></div>
+</div>
+
+<script>
+async function sendPrompt() {
+    const input = document.getElementById("promptInput").value.trim();
+    if (!input) return;
+
+    const chatBox = document.getElementById("chatBox");
+    const metaInfo = document.getElementById("metaInfo");
+
+    chatBox.innerHTML += `<div class="message"><span class="user">You:</span> ${input}</div>`;
+    document.getElementById("promptInput").value = "";
+
+    try {
+        const response = await fetch("http://localhost:8000/infer", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({ prompt: input })
+        });
+
+        const data = await response.json();
+
+        chatBox.innerHTML += `
+            <div class="message">
+                <span class="bot">Model:</span><br>
+                <pre>${data.output}</pre>
+            </div>
+        `;
+
+        metaInfo.innerText =
+            `Latency: ${data.latency_seconds}s | Prefill: ${data.prefill_seconds}s | Decode: ${data.decode_seconds}s | Tokens: ${data.total_tokens}`;
+
+        chatBox.scrollTop = chatBox.scrollHeight;
+
+    } catch (err) {
+        chatBox.innerHTML += `<div class="message">❌ Error calling backend</div>`;
+    }
+}
+</script>
+
+</body>
+</html>
