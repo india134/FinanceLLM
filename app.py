@@ -111,6 +111,8 @@ model.save_pretrained(OUTPUT_PATH)
 model.eval()
 
 print("✅ Done. LoRA is now permanently merged.")
+print("LoRA merged, parameters:", sum(p.numel() for p in model.parameters()))
+
 
 
 
@@ -212,6 +214,7 @@ def infer(request: InferenceRequest):
     except Exception as e:
         logger.exception("Inference failed")
         raise HTTPException(status_code=500, detail=str(e))
+
 
 
 
