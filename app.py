@@ -6,6 +6,7 @@ from fastapi import FastAPI, HTTPException,Request
 from pydantic import BaseModel
 from transformers import AutoTokenizer, AutoModelForCausalLM
 from peft import PeftModel
+from fastapi.templating import Jinja2Templates
 
 # ============================================================
 # HARD LOCK: NO DOWNLOADS
@@ -49,6 +50,8 @@ SYSTEM_PROMPT = (
 # APP
 # ============================================================
 app = FastAPI(title="Finance LLM Inference Service")
+templates = Jinja2Templates(directory="templates")
+
 from fastapi.middleware.cors import CORSMiddleware
 
 app.add_middleware(
@@ -209,6 +212,7 @@ def infer(request: InferenceRequest):
     except Exception as e:
         logger.exception("Inference failed")
         raise HTTPException(status_code=500, detail=str(e))
+
 
 
 
