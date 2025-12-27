@@ -10,8 +10,8 @@ from peft import PeftModel
 # ============================================================
 # HARD LOCK: NO DOWNLOADS
 # ============================================================
-#os.environ["HF_HUB_OFFLINE"] = "1"
-#os.environ["TRANSFORMERS_OFFLINE"] = "1"
+os.environ["HF_HUB_OFFLINE"] = "1"
+os.environ["TRANSFORMERS_OFFLINE"] = "1"
 
 # ============================================================
 # LOGGING
@@ -65,7 +65,7 @@ app.add_middleware(
 logger.info("Loading tokenizer...")
 tokenizer = AutoTokenizer.from_pretrained(
     BASE_MODEL_PATH,
-    local_files_only=True,
+    
     trust_remote_code=True
 )
 
@@ -89,14 +89,14 @@ base = AutoModelForCausalLM.from_pretrained(
     BASE_MODEL_PATH,
     torch_dtype=torch.float32,
     device_map="cpu",
-    local_files_only=True
+    
 )
 
 print("Loading LoRA...")
 model = PeftModel.from_pretrained(
     base,
     "guptaakash134/finance-qlora-qwen",
-    local_files_only=True
+    
 )
 
 print("Merging LoRA weights...")
@@ -203,6 +203,7 @@ def infer(request: InferenceRequest):
     except Exception as e:
         logger.exception("Inference failed")
         raise HTTPException(status_code=500, detail=str(e))
+
 
 
 
